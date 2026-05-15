@@ -36,8 +36,8 @@
         var(--bg);
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 18px;
+      align-items: flex-start;
+      padding: 30px 22px;
     }
 
     button,
@@ -53,13 +53,10 @@
     }
 
     .phone-shell {
-      width: min(430px, 100%);
-      height: min(860px, calc(100vh - 36px));
-      min-height: 680px;
-      border-radius: 26px;
-      background: #f8fbff;
-      box-shadow: var(--shadow);
-      padding: 14px;
+      width: min(1180px, 100%);
+      min-height: calc(100vh - 60px);
+      border-radius: 18px;
+      background: transparent;
       display: flex;
     }
 
@@ -71,10 +68,11 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      box-shadow: var(--shadow);
     }
 
     .dialog-header {
-      padding: 14px 14px 10px;
+      padding: 20px 22px 16px;
       background: linear-gradient(180deg, #fff0f7, #ffe0ec);
       border-bottom: 1px solid var(--line);
     }
@@ -89,20 +87,9 @@
 
     h1 {
       margin: 0;
-      font-size: 21px;
+      font-size: 28px;
       line-height: 1.2;
       letter-spacing: 0;
-    }
-
-    .status-pill {
-      flex: none;
-      border-radius: 999px;
-      background: #fff;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1;
-      padding: 8px 10px;
-      border: 1px solid #f0cfe1;
     }
 
     .tabs {
@@ -130,16 +117,26 @@
     .dialog-body {
       flex: 1;
       overflow-y: auto;
-      padding: 12px;
+      padding: 18px;
       scrollbar-width: thin;
+    }
+
+    #contributionForm {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
     }
 
     .section {
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 12px;
+      padding: 14px;
+    }
+
+    .summary-panel {
+      grid-column: 1 / -1;
     }
 
     .section-title {
@@ -181,6 +178,11 @@
     textarea:focus {
       border-color: var(--blue);
       box-shadow: 0 0 0 3px rgba(69, 110, 168, 0.14);
+    }
+
+    .input-error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(183, 92, 104, 0.14);
     }
 
     textarea {
@@ -294,6 +296,32 @@
       margin-right: 6px;
     }
 
+    .meaning-group {
+      border: 1px solid #ebd4e2;
+      background: #fffafd;
+      border-radius: 9px;
+      padding: 9px 10px;
+    }
+
+    .meaning-group-title {
+      color: #24466f;
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .meaning-group .summary-item {
+      border: 0;
+      border-radius: 0;
+      border-top: 1px solid #f0ddeb;
+      background: transparent;
+      padding: 8px 0;
+    }
+
+    .meaning-group .summary-item:first-of-type {
+      border-top: 0;
+    }
+
     .delete-button {
       width: 34px;
       height: 34px;
@@ -313,6 +341,32 @@
       background: #fffafd;
     }
 
+    .search-results {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .search-result {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 9px;
+      background: #fffafd;
+      border: 1px solid #ebd4e2;
+      color: var(--ink);
+      padding: 9px 10px;
+      text-align: left;
+      font-weight: 800;
+    }
+
+    .search-result small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
     .structure-tools {
       display: none;
     }
@@ -326,6 +380,34 @@
       font-size: 12px;
       line-height: 1.45;
       margin: 8px 0 0;
+    }
+
+    .structure-notice {
+      border: 1px solid #bdd2ef;
+      border-radius: 9px;
+      background: var(--blue-soft);
+      color: #24466f;
+      padding: 9px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+      margin: 10px 0 12px;
+    }
+
+    .notice {
+      border: 1px solid #bdd2ef;
+      border-radius: 9px;
+      background: var(--blue-soft);
+      color: #24466f;
+      padding: 10px 11px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+      margin: 10px 0 12px;
+    }
+
+    .notice strong {
+      color: #17375f;
     }
 
     .summary-panel {
@@ -359,33 +441,65 @@
       overflow-wrap: anywhere;
     }
 
+    .review-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .review-row {
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.82);
+      padding: 10px;
+    }
+
+    .review-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .review-value {
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .review-value ol,
+    .review-value ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .review-value li {
+      margin: 3px 0;
+    }
+
+    .success-actions {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .success-actions.visible {
+      display: grid;
+    }
+
     .dialog-footer {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
-      padding: 10px 12px 12px;
+      padding: 12px 18px 16px;
       background: #fff0f7;
       border-top: 1px solid var(--line);
     }
 
-    .preview {
-      margin: 0;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      max-height: 300px;
-      overflow: auto;
-      background: #2f2a3c;
-      color: #f8f4ff;
-      border-radius: 9px;
-      padding: 11px;
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
     .placeholder-list {
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
     .placeholder-card {
@@ -411,15 +525,45 @@
       display: none !important;
     }
 
+    @media (max-width: 820px) {
+      body {
+        padding: 18px;
+      }
+
+      .phone-shell {
+        min-height: calc(100vh - 36px);
+      }
+
+      .dialog-header {
+        padding: 14px 14px 10px;
+      }
+
+      h1 {
+        font-size: 21px;
+      }
+
+      .dialog-body {
+        padding: 12px;
+      }
+
+      #contributionForm,
+      .placeholder-list {
+        display: block;
+      }
+
+      .section,
+      .placeholder-card {
+        margin-bottom: 12px;
+      }
+    }
+
     @media (max-width: 380px) {
       body {
         padding: 8px;
       }
 
       .phone-shell {
-        height: calc(100vh - 16px);
         min-height: 640px;
-        padding: 8px;
         border-radius: 18px;
       }
 
@@ -444,7 +588,6 @@
       <header class="dialog-header">
         <div class="title-row">
           <h1>词条贡献</h1>
-          <div class="status-pill" id="headerStatus">待填写</div>
         </div>
         <nav class="tabs" aria-label="贡献模式">
           <button class="tab active" data-tab="new">录入新词</button>
@@ -458,14 +601,14 @@
         <form id="contributionForm" autocomplete="off">
           <section class="section correction-only hidden">
             <h2 class="section-title">纠错目标</h2>
-            <div class="field">
-              <label for="targetWord">要纠错的单词</label>
-              <input id="targetWord" type="text" placeholder="例如：ability">
+            <div class="field inline-add">
+              <div>
+                <label for="targetWord">搜索词库中的单词</label>
+                <input id="targetWord" type="text" maxlength="40" placeholder="输入英文单词，例如：ability">
+              </div>
+              <button type="button" class="secondary-button" id="searchWordButton">搜索</button>
             </div>
-            <div class="field">
-              <label for="correctionReason">错误说明</label>
-              <textarea id="correctionReason" placeholder="说明你发现哪里错了，方便审核玩家判断"></textarea>
-            </div>
+            <div class="search-results" id="searchResults"></div>
           </section>
 
           <section class="section">
@@ -473,25 +616,25 @@
             <div class="grid-2">
               <div class="field">
                 <label for="wordInput">单词</label>
-                <input id="wordInput" type="text" placeholder="例如：ability">
+                <input id="wordInput" type="text" maxlength="40" placeholder="输入英文单词，例如：ability">
               </div>
               <div class="field">
                 <label for="ipaInput">音标</label>
-                <input id="ipaInput" type="text" placeholder="例如：[əˈbɪləti]">
+                <input id="ipaInput" type="text" maxlength="80" placeholder="不用写中括号，例如：əˈbɪləti">
               </div>
             </div>
 
             <div class="field">
-              <div class="field-label">词库等级（可多选）</div>
+              <div class="field-label">单词等级</div>
               <div class="choice-grid" id="levelChoices"></div>
             </div>
 
             <div class="field">
               <div class="field-label">词条类型</div>
               <div class="choice-grid" id="typeChoices">
-                <button type="button" class="choice selected" data-type="independent">independent</button>
-                <button type="button" class="choice" data-type="morphology">morphology</button>
-                <button type="button" class="choice" data-type="compound">compound</button>
+                <button type="button" class="choice selected" data-type="independent">独立词</button>
+                <button type="button" class="choice" data-type="morphology">词根词缀词</button>
+                <button type="button" class="choice" data-type="compound">组合词</button>
               </div>
             </div>
           </section>
@@ -502,10 +645,11 @@
               <div class="field-label">选择词性</div>
               <div class="choice-grid" id="partOfSpeechChoices"></div>
             </div>
+            <p class="notice"><strong>每次只填写一个中文意思。</strong>如果有多个意思，请输入一条后点击添加释义，再继续添加下一条。</p>
             <div class="field inline-add">
               <div>
                 <label for="meaningInput">中文释义</label>
-                <input id="meaningInput" type="text" placeholder="输入一条中文释义">
+                <input id="meaningInput" type="text" maxlength="60" placeholder="一个中文意思，例如：能力">
               </div>
               <button type="button" class="add-button" id="addMeaningButton">添加释义</button>
             </div>
@@ -515,29 +659,26 @@
           <section class="section">
             <h2 class="section-title">构词结构</h2>
             <div id="independentHint" class="empty-state">
-              当前是独立词，默认不需要拆解结构。需要时可以手动添加结构成分。
-              <div style="margin-top: 10px;">
-                <button type="button" class="secondary-button" id="showStructureButton">添加结构</button>
-              </div>
+              当前是独立词，不需要拆解结构。
             </div>
 
             <div class="structure-tools" id="structureTools">
               <div class="field">
                 <div class="field-label">结构类型</div>
                 <div class="choice-grid" id="roleChoices"></div>
-                <p class="hint" id="structureHint"></p>
+                <p class="structure-notice" id="structureHint"></p>
               </div>
               <div class="grid-2">
                 <div class="field">
-                  <label for="partInput">成分</label>
-                  <input id="partInput" type="text" placeholder="例如：re / act / ion">
+                  <label for="partInput" id="partInputLabel">前缀内容</label>
+                  <input id="partInput" type="text" maxlength="40" placeholder="填写前缀，例如：re">
                 </div>
                 <div class="field">
-                  <label for="structureMeaningInput">成分含义</label>
-                  <input id="structureMeaningInput" type="text" placeholder="例如：再 / 做 / 名词后缀">
+                  <label for="structureMeaningInput">中文含义</label>
+                  <input id="structureMeaningInput" type="text" maxlength="60" placeholder="一个中文含义，例如：再">
                 </div>
               </div>
-              <button type="button" class="add-button" id="addStructureButton">添加成分</button>
+              <button type="button" class="add-button" id="addStructureButton">添加这一项</button>
             </div>
 
             <div class="summary-list" id="structureList"></div>
@@ -547,51 +688,64 @@
             <h2 class="section-title">词源/补充说明</h2>
             <div class="field">
               <label for="originInput">词源或记忆说明</label>
-              <textarea id="originInput" placeholder="可选，填写词源、记忆法或补充解释"></textarea>
+              <textarea id="originInput" maxlength="500" placeholder="可选，例如：re 表示再次或返回"></textarea>
             </div>
           </section>
 
           <section class="section summary-panel">
             <h2 class="section-title">信息摘要</h2>
-            <div class="summary-metrics">
-              <div class="metric">
-                <div class="metric-label">已选词库</div>
-                <div class="metric-value" id="summaryLevels">未选择</div>
+            <div class="review-list">
+              <div class="review-row">
+                <div class="review-label">单词</div>
+                <div class="review-value" id="summaryWord">未填写</div>
               </div>
-              <div class="metric">
-                <div class="metric-label">词条类型</div>
-                <div class="metric-value" id="summaryType">independent</div>
+              <div class="review-row">
+                <div class="review-label">音标</div>
+                <div class="review-value" id="summaryIpa">未填写</div>
               </div>
-              <div class="metric">
-                <div class="metric-label">释义数量</div>
-                <div class="metric-value" id="summaryMeaningCount">0 条</div>
+              <div class="review-row">
+                <div class="review-label">单词等级</div>
+                <div class="review-value" id="summaryLevels">未选择</div>
               </div>
-              <div class="metric">
-                <div class="metric-label">结构数量</div>
-                <div class="metric-value" id="summaryStructureCount">0 个成分</div>
+              <div class="review-row">
+                <div class="review-label">词条类型</div>
+                <div class="review-value" id="summaryType">独立词</div>
+              </div>
+              <div class="review-row">
+                <div class="review-label">释义</div>
+                <div class="review-value" id="summaryMeanings">未添加</div>
+              </div>
+              <div class="review-row">
+                <div class="review-label">构词结构</div>
+                <div class="review-value" id="summaryStructures">独立词，不需要拆解结构</div>
+              </div>
+              <div class="review-row">
+                <div class="review-label">词源/补充说明</div>
+                <div class="review-value" id="summaryOrigin">未填写</div>
               </div>
             </div>
-            <p class="hint" id="formMessage">填写完成后点击提交审核查看模拟 JSON。</p>
+            <p class="hint" id="formMessage">填写完成后点击提交审核。</p>
+            <div class="success-actions" id="successActions">
+              <button type="button" class="secondary-button" id="newSubmissionButton">继续提交新词</button>
+              <button type="button" class="ghost-button" id="viewMineButton">查看我的提交</button>
+            </div>
           </section>
 
-          <section class="section hidden" id="previewSection">
-            <h2 class="section-title">提交预览 JSON</h2>
-            <pre class="preview" id="jsonPreview"></pre>
-          </section>
         </form>
 
         <section class="placeholder-list hidden" id="reviewPanel">
           <div class="placeholder-card">
             <h2>待审核：sunflower</h2>
-            <p>类型：compound。审核时只投通过/驳回并写备注，不能直接改提交内容。</p>
+            <p>类型：组合词。审核时只投通过/驳回并写备注，不能直接改提交内容。</p>
           </div>
           <div class="placeholder-card">
             <h2>待审核：rebuild</h2>
-            <p>类型：morphology。这里先做列表占位，后续再接真实数据。</p>
+            <p>类型：词根词缀词。这里先做列表占位，后续再接真实数据。</p>
           </div>
         </section>
 
         <section class="placeholder-list hidden" id="minePanel">
+          <div id="latestSubmissionList"></div>
           <div class="placeholder-card">
             <h2>我的提交：ability</h2>
             <p>状态：待审核。已通过 2/5，驳回 0/3。</p>
@@ -604,8 +758,7 @@
       </div>
 
       <footer class="dialog-footer">
-        <button type="button" class="ghost-button" id="closeButton">关闭</button>
-        <button type="button" class="secondary-button" id="draftButton">保存草稿</button>
+        <button type="button" class="ghost-button" id="closeButton">返回</button>
         <button type="button" class="submit-button" id="submitButton">提交审核</button>
       </footer>
     </section>
@@ -630,6 +783,66 @@
       word: "组合词成分",
       connector: "连接成分"
     };
+    const morphologyExamples = {
+      prefix: { part: "re", meaning: "再" },
+      root: { part: "act", meaning: "行动" },
+      suffix: { part: "tion", meaning: "状态" }
+    };
+    const wordTypeLabels = {
+      independent: "独立词",
+      morphology: "词根词缀词",
+      compound: "组合词"
+    };
+    const safetyLimits = {
+      word: 40,
+      ipa: 80,
+      meaning: 60,
+      structurePart: 40,
+      structureMeaning: 60,
+      origin: 500
+    };
+    const sampleWords = [
+      {
+        word: "ability",
+        ipa: "əˈbɪləti",
+        levels: [2, 3, 4],
+        wordType: "independent",
+        meanings: [
+          { type: "n.", chinese: "能力" },
+          { type: "n.", chinese: "才能" }
+        ],
+        structures: [],
+        origin: "ability 表示能力或才能。"
+      },
+      {
+        word: "rebuild",
+        ipa: "ˌriːˈbɪld",
+        levels: [3, 4],
+        wordType: "morphology",
+        meanings: [
+          { type: "v.", chinese: "重建" }
+        ],
+        structures: [
+          { role: "prefix", part: "re", meaning: "再、重新", refID: 0 },
+          { role: "root", part: "build", meaning: "建造", refID: 0 }
+        ],
+        origin: "re + build，表示重新建造。"
+      },
+      {
+        word: "sunflower",
+        ipa: "ˈsʌnflaʊər",
+        levels: [2, 3],
+        wordType: "compound",
+        meanings: [
+          { type: "n.", chinese: "向日葵" }
+        ],
+        structures: [
+          { role: "word", part: "sun", meaning: "太阳", refID: 0 },
+          { role: "word", part: "flower", meaning: "花", refID: 0 }
+        ],
+        origin: "sun + flower，字面意思是太阳花。"
+      }
+    ];
 
     const state = {
       tab: "new",
@@ -637,14 +850,13 @@
       wordType: "independent",
       selectedPartOfSpeech: "n.",
       selectedRole: "prefix",
+      selectedCorrectionWord: "",
       meanings: [],
       structures: [],
-      status: "待填写",
-      structureForcedOpen: false
+      status: "待填写"
     };
 
     const elements = {
-      headerStatus: document.getElementById("headerStatus"),
       tabs: Array.from(document.querySelectorAll(".tab")),
       form: document.getElementById("contributionForm"),
       reviewPanel: document.getElementById("reviewPanel"),
@@ -653,7 +865,8 @@
       wordInput: document.getElementById("wordInput"),
       ipaInput: document.getElementById("ipaInput"),
       targetWord: document.getElementById("targetWord"),
-      correctionReason: document.getElementById("correctionReason"),
+      searchWordButton: document.getElementById("searchWordButton"),
+      searchResults: document.getElementById("searchResults"),
       originInput: document.getElementById("originInput"),
       levelChoices: document.getElementById("levelChoices"),
       typeChoices: document.getElementById("typeChoices"),
@@ -662,24 +875,28 @@
       addMeaningButton: document.getElementById("addMeaningButton"),
       meaningList: document.getElementById("meaningList"),
       independentHint: document.getElementById("independentHint"),
-      showStructureButton: document.getElementById("showStructureButton"),
       structureTools: document.getElementById("structureTools"),
       roleChoices: document.getElementById("roleChoices"),
       structureHint: document.getElementById("structureHint"),
+      partInputLabel: document.getElementById("partInputLabel"),
       partInput: document.getElementById("partInput"),
       structureMeaningInput: document.getElementById("structureMeaningInput"),
       addStructureButton: document.getElementById("addStructureButton"),
       structureList: document.getElementById("structureList"),
+      summaryWord: document.getElementById("summaryWord"),
+      summaryIpa: document.getElementById("summaryIpa"),
       summaryLevels: document.getElementById("summaryLevels"),
       summaryType: document.getElementById("summaryType"),
-      summaryMeaningCount: document.getElementById("summaryMeaningCount"),
-      summaryStructureCount: document.getElementById("summaryStructureCount"),
+      summaryMeanings: document.getElementById("summaryMeanings"),
+      summaryStructures: document.getElementById("summaryStructures"),
+      summaryOrigin: document.getElementById("summaryOrigin"),
       formMessage: document.getElementById("formMessage"),
-      previewSection: document.getElementById("previewSection"),
-      jsonPreview: document.getElementById("jsonPreview"),
       closeButton: document.getElementById("closeButton"),
-      draftButton: document.getElementById("draftButton"),
-      submitButton: document.getElementById("submitButton")
+      submitButton: document.getElementById("submitButton"),
+      successActions: document.getElementById("successActions"),
+      newSubmissionButton: document.getElementById("newSubmissionButton"),
+      viewMineButton: document.getElementById("viewMineButton"),
+      latestSubmissionList: document.getElementById("latestSubmissionList")
     };
 
     function createChoice(label, attrs = {}) {
@@ -701,7 +918,7 @@
       partOfSpeechOptions.forEach(option => {
         const button = createChoice(option, { pos: option });
         button.addEventListener("click", () => {
-          state.selectedPartOfSpeech = option;
+          state.selectedPartOfSpeech = state.selectedPartOfSpeech === option ? "" : option;
           update();
         });
         elements.partOfSpeechChoices.appendChild(button);
@@ -709,10 +926,11 @@
 
       elements.typeChoices.querySelectorAll("[data-type]").forEach(button => {
         button.addEventListener("click", () => {
-          state.wordType = button.dataset.type;
-          state.structureForcedOpen = false;
-          state.selectedRole = getAllowedRoles()[0];
-          update();
+      state.wordType = state.wordType === button.dataset.type ? "" : button.dataset.type;
+      state.selectedRole = getAllowedRoles()[0];
+      clearInvalid(elements.partInput);
+      clearInvalid(elements.structureMeaningInput);
+      update();
         });
       });
     }
@@ -735,11 +953,17 @@
       if (state.wordType === "morphology") {
         return ["prefix", "root", "suffix"];
       }
-      return ["prefix", "root", "suffix", "word", "connector"];
+      return [];
     }
 
     function renderRoleChoices() {
       const allowed = getAllowedRoles();
+      if (allowed.length === 0) {
+        state.selectedRole = "";
+        elements.roleChoices.innerHTML = "";
+        elements.structureHint.textContent = "请先选择词条类型。";
+        return;
+      }
       if (!allowed.includes(state.selectedRole)) {
         state.selectedRole = allowed[0];
       }
@@ -751,25 +975,86 @@
           button.classList.add("selected");
         }
         button.addEventListener("click", () => {
-          state.selectedRole = role;
+          state.selectedRole = state.selectedRole === role ? "" : role;
           update();
         });
         elements.roleChoices.appendChild(button);
       });
 
       if (state.wordType === "compound") {
-        elements.structureHint.textContent = "组合词默认用组合词成分，必要时添加连接成分。";
+        elements.partInputLabel.textContent = state.selectedRole === "connector" ? "连接内容" : "组合词内容";
+        elements.partInput.placeholder = state.selectedRole === "connector" ? "填写连接内容，例如：o" : "填写组成单词，例如：sun";
+        elements.structureMeaningInput.placeholder = state.selectedRole === "connector" ? "一个中文含义，例如：连接" : "一个中文含义，例如：太阳";
+        elements.structureHint.textContent = "每次只填写一个结构中文含义。组合词需要把每个组成部分分开添加；同一个部分有多个中文含义时，请一条一条添加。";
       } else if (state.wordType === "morphology") {
-        elements.structureHint.textContent = "词根词缀词默认使用前缀、词根、后缀。";
+        const roleLabel = roleLabels[state.selectedRole] || "词根词缀";
+        const example = morphologyExamples[state.selectedRole] || morphologyExamples.prefix;
+        elements.partInputLabel.textContent = `${roleLabel}内容`;
+        elements.partInput.placeholder = `填写${roleLabel}，例如：${example.part}`;
+        elements.structureMeaningInput.placeholder = `一个中文含义，例如：${example.meaning}`;
+        elements.structureHint.textContent = "每次只填写一个结构中文含义。词根词缀词需要把前缀、词根、后缀分开添加；同一个前缀、词根或后缀有多个中文含义时，请一条一条添加。";
       } else {
-        elements.structureHint.textContent = "独立词通常不拆结构，特殊情况可以手动添加。";
+        elements.partInputLabel.textContent = "前缀内容";
+        elements.partInput.placeholder = "填写前缀，例如：re";
+        elements.structureMeaningInput.placeholder = "一个中文含义，例如：再";
+        elements.structureHint.textContent = "";
       }
     }
 
+    function isValidWordText(value) {
+      return /^[a-zA-Z][a-zA-Z'-]*$/.test(value);
+    }
+
+    function hasUnsafeText(value) {
+      return /[<>]/.test(value);
+    }
+
+    function markInvalid(element) {
+      if (!element) {
+        return;
+      }
+      element.classList.add("input-error");
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.focus({ preventScroll: true });
+    }
+
+    function clearInvalid(element) {
+      if (element) {
+        element.classList.remove("input-error");
+      }
+    }
+
+    function normalizeMeaning(value) {
+      return value.trim().replace(/\s+/g, " ");
+    }
+
     function addMeaning() {
-      const chinese = elements.meaningInput.value.trim();
+      const chinese = normalizeMeaning(elements.meaningInput.value);
       if (!chinese) {
         setStatus("请先输入中文释义。");
+        markInvalid(elements.meaningInput);
+        return;
+      }
+      if (!state.selectedPartOfSpeech) {
+        setStatus("请先选择词性。");
+        return;
+      }
+      if (chinese.length > safetyLimits.meaning) {
+        setStatus(`中文释义不要超过 ${safetyLimits.meaning} 个字。`);
+        markInvalid(elements.meaningInput);
+        return;
+      }
+      if (hasUnsafeText(chinese)) {
+        setStatus("中文释义里不能包含 < 或 >。");
+        markInvalid(elements.meaningInput);
+        return;
+      }
+      const duplicate = state.meanings.some(meaning =>
+        meaning.type === state.selectedPartOfSpeech && meaning.chinese === chinese
+      );
+      if (duplicate) {
+        setStatus("这条释义已经添加过了。");
+        markInvalid(elements.meaningInput);
         return;
       }
 
@@ -778,15 +1063,44 @@
         chinese
       });
       elements.meaningInput.value = "";
+      clearInvalid(elements.meaningInput);
       setStatus("已添加释义");
       update();
     }
 
     function addStructure() {
-      const part = elements.partInput.value.trim();
-      const meaning = elements.structureMeaningInput.value.trim();
+      const part = normalizeMeaning(elements.partInput.value);
+      const meaning = normalizeMeaning(elements.structureMeaningInput.value);
+      if (!state.selectedRole) {
+        setStatus("请先选择结构类型。");
+        return;
+      }
       if (!part || !meaning) {
-        setStatus("结构成分和含义都要填写。");
+        setStatus("结构内容和中文含义都要填写。");
+        markInvalid(!part ? elements.partInput : elements.structureMeaningInput);
+        return;
+      }
+      if (part.length > safetyLimits.structurePart) {
+        setStatus(`结构内容不要超过 ${safetyLimits.structurePart} 个字符。`);
+        markInvalid(elements.partInput);
+        return;
+      }
+      if (meaning.length > safetyLimits.structureMeaning) {
+        setStatus(`结构含义不要超过 ${safetyLimits.structureMeaning} 个字。`);
+        markInvalid(elements.structureMeaningInput);
+        return;
+      }
+      if (hasUnsafeText(part) || hasUnsafeText(meaning)) {
+        setStatus("结构内容里不能包含 < 或 >。");
+        markInvalid(hasUnsafeText(part) ? elements.partInput : elements.structureMeaningInput);
+        return;
+      }
+      const duplicate = state.structures.some(structure =>
+        structure.role === state.selectedRole && structure.part === part && structure.meaning === meaning
+      );
+      if (duplicate) {
+        setStatus("这个结构含义已经添加过了。");
+        markInvalid(elements.structureMeaningInput);
         return;
       }
 
@@ -798,7 +1112,66 @@
       });
       elements.partInput.value = "";
       elements.structureMeaningInput.value = "";
-      setStatus("已添加结构成分");
+      clearInvalid(elements.partInput);
+      clearInvalid(elements.structureMeaningInput);
+      setStatus("已添加结构内容");
+      update();
+    }
+
+    function searchExistingWord() {
+      const query = elements.targetWord.value.trim().toLowerCase();
+      elements.searchResults.innerHTML = "";
+      state.selectedCorrectionWord = "";
+
+      if (!query) {
+        setStatus("请输入要纠错的单词。");
+        markInvalid(elements.targetWord);
+        return;
+      }
+      if (!isValidWordText(query)) {
+        setStatus("搜索词只能填写英文单词。");
+        markInvalid(elements.targetWord);
+        return;
+      }
+
+      const matches = sampleWords.filter(item => item.word.includes(query));
+      if (matches.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "没有找到匹配词条。";
+        elements.searchResults.appendChild(empty);
+        setStatus("没有找到匹配词条，请确认拼写后再搜索。");
+        return;
+      }
+
+      matches.forEach(item => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "search-result";
+        const levelNames = item.levels
+          .map(code => levels.find(level => level.code === code)?.name)
+          .filter(Boolean)
+          .join("、");
+        button.innerHTML = `${escapeHtml(item.word)}<small>${escapeHtml(wordTypeLabels[item.wordType])} / ${escapeHtml(levelNames)}</small>`;
+        button.addEventListener("click", () => fillFromExistingWord(item));
+        elements.searchResults.appendChild(button);
+      });
+    }
+
+    function fillFromExistingWord(item) {
+      elements.targetWord.value = item.word;
+      elements.wordInput.value = item.word;
+      elements.ipaInput.value = `[${item.ipa}]`;
+      elements.originInput.value = item.origin || "";
+      state.selectedCorrectionWord = item.word;
+      state.selectedLevels = item.levels.slice();
+      state.wordType = item.wordType;
+      state.selectedRole = getAllowedRoles()[0] || "";
+      state.meanings = item.meanings.map(meaning => ({ ...meaning }));
+      state.structures = item.structures.map(structure => ({ ...structure }));
+      elements.searchResults.innerHTML = "";
+      clearInvalid(elements.targetWord);
+      setStatus("已带入词库中的原词条，可在下方编辑后提交纠错。");
       update();
     }
 
@@ -822,15 +1195,34 @@
         return;
       }
 
+      const groups = new Map();
       state.meanings.forEach((meaning, index) => {
-        const item = document.createElement("div");
-        item.className = "summary-item";
-        item.innerHTML = `
-          <div class="summary-main"><strong>${escapeHtml(meaning.type)}</strong>${escapeHtml(meaning.chinese)}</div>
-          <button type="button" class="delete-button" aria-label="删除释义">×</button>
-        `;
-        item.querySelector("button").addEventListener("click", () => removeMeaning(index));
-        elements.meaningList.appendChild(item);
+        if (!groups.has(meaning.type)) {
+          groups.set(meaning.type, []);
+        }
+        groups.get(meaning.type).push({ meaning, index });
+      });
+
+      groups.forEach((items, type) => {
+        const group = document.createElement("div");
+        group.className = "meaning-group";
+        const title = document.createElement("div");
+        title.className = "meaning-group-title";
+        title.textContent = type;
+        group.appendChild(title);
+
+        items.forEach(({ meaning, index }) => {
+          const item = document.createElement("div");
+          item.className = "summary-item";
+          item.innerHTML = `
+            <div class="summary-main">${escapeHtml(meaning.chinese)}</div>
+            <button type="button" class="delete-button" aria-label="删除释义">×</button>
+          `;
+          item.querySelector("button").addEventListener("click", () => removeMeaning(index));
+          group.appendChild(item);
+        });
+
+        elements.meaningList.appendChild(group);
       });
     }
 
@@ -839,26 +1231,49 @@
       if (state.structures.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
-        empty.textContent = "还没有结构成分。添加后会以数组形式进入提交预览。";
+        empty.textContent = "还没有结构内容。每次添加一个部分，多个部分请逐条添加。";
         elements.structureList.appendChild(empty);
         return;
       }
 
+      const groups = new Map();
       state.structures.forEach((structure, index) => {
-        const item = document.createElement("div");
-        item.className = "summary-item";
-        item.innerHTML = `
-          <div class="summary-main"><strong>${escapeHtml(structure.role)}</strong>${escapeHtml(structure.part)} = ${escapeHtml(structure.meaning)}</div>
-          <button type="button" class="delete-button" aria-label="删除结构">×</button>
-        `;
-        item.querySelector("button").addEventListener("click", () => removeStructure(index));
-        elements.structureList.appendChild(item);
+        const key = `${structure.role}::${structure.part}`;
+        if (!groups.has(key)) {
+          groups.set(key, {
+            role: structure.role,
+            part: structure.part,
+            items: []
+          });
+        }
+        groups.get(key).items.push({ structure, index });
+      });
+
+      groups.forEach(groupData => {
+        const group = document.createElement("div");
+        group.className = "meaning-group";
+        const title = document.createElement("div");
+        title.className = "meaning-group-title";
+        title.textContent = `${roleLabels[groupData.role] || groupData.role} ${groupData.part}`;
+        group.appendChild(title);
+
+        groupData.items.forEach(({ structure, index }) => {
+          const item = document.createElement("div");
+          item.className = "summary-item";
+          item.innerHTML = `
+            <div class="summary-main">${escapeHtml(structure.meaning)}</div>
+            <button type="button" class="delete-button" aria-label="删除结构">×</button>
+          `;
+          item.querySelector("button").addEventListener("click", () => removeStructure(index));
+          group.appendChild(item);
+        });
+
+        elements.structureList.appendChild(group);
       });
     }
 
     function setStatus(message) {
       state.status = message;
-      elements.headerStatus.textContent = message;
       elements.formMessage.textContent = message;
     }
 
@@ -867,8 +1282,8 @@
       return {
         submission_type: state.tab === "correction" ? "correction" : "new_word",
         target_word: state.tab === "correction" ? elements.targetWord.value.trim().toLowerCase() : "",
-        correction_reason: state.tab === "correction" ? elements.correctionReason.value.trim() : "",
-        word_form: elements.wordInput.value.trim().toLowerCase(),
+        correction_reason: "",
+        word_form: elements.wordInput.value.trim().toLowerCase().replace(/\s+/g, ""),
         phonetic: {
           ipa: normalizeIpa(elements.ipaInput.value)
         },
@@ -887,7 +1302,7 @@
           refID: 0,
           meaning: structure.meaning
         })),
-        origin: elements.originInput.value.trim(),
+        origin: normalizeMeaning(elements.originInput.value),
         client_status: state.status
       };
     }
@@ -901,29 +1316,87 @@
         if (!payload.target_word) {
           return "纠错模式需要填写要纠错的单词。";
         }
-        if (!payload.correction_reason) {
-          return "纠错模式需要填写错误说明。";
+        if (payload.target_word !== state.selectedCorrectionWord) {
+          return "纠错词条需要先从搜索结果中选择。";
         }
       }
       if (!payload.word_form) {
         return "请填写单词。";
       }
+      if (/\s/.test(elements.wordInput.value)) {
+        return "单词里不要包含空格。";
+      }
+      if (!isValidWordText(payload.word_form)) {
+        return "单词只能填写英文字母，可包含连字符或撇号。";
+      }
+      if (payload.word_form.length > safetyLimits.word) {
+        return `单词不要超过 ${safetyLimits.word} 个字符。`;
+      }
       if (!payload.phonetic.ipa) {
         return "请填写音标。";
       }
+      if (payload.phonetic.ipa.length > safetyLimits.ipa) {
+        return `音标不要超过 ${safetyLimits.ipa} 个字符。`;
+      }
+      if (hasUnsafeText(payload.phonetic.ipa)) {
+        return "音标里不能包含 < 或 >。";
+      }
       if (payload.language_levels.length === 0) {
-        return "请至少选择一个词库等级。";
+        return "请至少选择一个单词等级。";
+      }
+      if (!payload.word_type) {
+        return "请选择词条类型。";
       }
       if (payload.detail.length === 0) {
         return "请至少添加一条释义。";
       }
+      for (let i = 0; i < payload.detail.length; i++) {
+        const row = payload.detail[i];
+        if (!row.type || !row.chinese) {
+          return "释义需要包含词性和中文意思。";
+        }
+        if (hasUnsafeText(row.chinese)) {
+          return "释义里不能包含 < 或 >。";
+        }
+      }
+      if ((payload.word_type === "morphology" || payload.word_type === "compound") && payload.structure.length === 0) {
+        return "词根词缀词或组合词需要至少添加一项构词结构。";
+      }
       for (let i = 0; i < payload.structure.length; i++) {
         const row = payload.structure[i];
         if (!row.part || !row.role || !row.meaning) {
-          return "结构成分必须包含类型、成分和含义。";
+          return "构词结构必须包含类型、内容和中文含义。";
+        }
+        if (hasUnsafeText(row.part) || hasUnsafeText(row.meaning)) {
+          return "构词结构里不能包含 < 或 >。";
         }
       }
+      if (payload.origin.length > safetyLimits.origin) {
+        return `词源或补充说明不要超过 ${safetyLimits.origin} 个字。`;
+      }
+      if (hasUnsafeText(payload.origin)) {
+        return "词源或补充说明里不能包含 < 或 >。";
+      }
       return "";
+    }
+
+    function focusValidationError(error) {
+      const fieldMap = [
+        { text: "搜索结果", element: elements.targetWord },
+        { text: "要纠错的单词", element: elements.targetWord },
+        { text: "单词只能", element: elements.wordInput },
+        { text: "请填写单词", element: elements.wordInput },
+        { text: "单词不要超过", element: elements.wordInput },
+        { text: "音标", element: elements.ipaInput },
+        { text: "释义", element: elements.meaningInput },
+        { text: "构词结构", element: elements.partInput },
+        { text: "结构", element: elements.partInput },
+        { text: "词源", element: elements.originInput }
+      ];
+      const match = fieldMap.find(item => error.includes(item.text));
+      if (match) {
+        markInvalid(match.element);
+      }
     }
 
     function submitPreview() {
@@ -935,32 +1408,23 @@
       const payload = buildPayload();
       const error = validatePayload(payload);
       if (error) {
-        elements.previewSection.classList.add("hidden");
         setStatus(error);
+        focusValidationError(error);
         return;
       }
 
       payload.client_status = "已提交审核";
-      elements.jsonPreview.textContent = JSON.stringify(payload, null, 2);
-      elements.previewSection.classList.remove("hidden");
-      setStatus("已生成提交预览");
-    }
-
-    function saveDraft() {
-      if (state.tab === "review" || state.tab === "mine") {
-        setStatus("占位列表无需保存。");
-        return;
-      }
-
-      const payload = buildPayload();
-      payload.client_status = "草稿";
-      elements.jsonPreview.textContent = JSON.stringify(payload, null, 2);
-      elements.previewSection.classList.remove("hidden");
-      setStatus("已生成草稿预览");
+      rememberLatestSubmission(payload);
+      elements.submitButton.classList.add("hidden");
+      elements.successActions.classList.add("visible");
+      setStatus("已提交审核。你可以继续提交新词，或查看我的提交。");
     }
 
     function switchTab(tab) {
       state.tab = tab;
+      if (tab !== "correction") {
+        state.selectedCorrectionWord = "";
+      }
       elements.tabs.forEach(button => button.classList.toggle("active", button.dataset.tab === tab));
       update();
     }
@@ -973,7 +1437,9 @@
       elements.correctionOnly.forEach(node => node.classList.toggle("hidden", state.tab !== "correction"));
 
       elements.submitButton.disabled = !isFormTab;
-      elements.draftButton.disabled = !isFormTab;
+      if (isFormTab && !elements.successActions.classList.contains("visible")) {
+        elements.submitButton.classList.remove("hidden");
+      }
 
       elements.levelChoices.querySelectorAll("[data-level-code]").forEach(button => {
         const code = Number(button.dataset.levelCode);
@@ -988,23 +1454,29 @@
         button.classList.toggle("primary-selected", button.dataset.pos === state.selectedPartOfSpeech);
       });
 
-      const shouldShowStructureTools = state.wordType !== "independent" || state.structureForcedOpen;
-      elements.independentHint.classList.toggle("hidden", state.wordType !== "independent" || state.structureForcedOpen);
+      if (state.wordType === "independent") {
+        state.structures = [];
+      }
+      const shouldShowStructureTools = state.wordType && state.wordType !== "independent";
+      elements.independentHint.classList.toggle("hidden", state.wordType !== "independent");
       elements.structureTools.classList.toggle("visible", shouldShowStructureTools);
+      elements.structureList.classList.toggle("hidden", state.wordType === "independent" || !state.wordType);
 
       renderRoleChoices();
       renderMeanings();
-      renderStructures();
+      if (state.wordType !== "independent" && state.wordType) {
+        renderStructures();
+      }
       updateSummary();
 
       if (state.tab === "review") {
+        elements.successActions.classList.remove("visible");
         setStatus("待审核列表");
       } else if (state.tab === "mine") {
+        elements.successActions.classList.remove("visible");
         setStatus("我的提交");
       } else if (!state.status || state.status === "待审核列表" || state.status === "我的提交") {
         setStatus("待填写");
-      } else {
-        elements.headerStatus.textContent = state.status;
       }
     }
 
@@ -1012,10 +1484,110 @@
       const selectedLevelNames = state.selectedLevels
         .map(code => levels.find(level => level.code === code)?.name)
         .filter(Boolean);
+      const word = elements.wordInput.value.trim();
+      const ipa = normalizeIpa(elements.ipaInput.value);
+      const origin = elements.originInput.value.trim();
+      elements.summaryWord.textContent = word || "未填写";
+      elements.summaryIpa.textContent = ipa ? `[${ipa}]` : "未填写";
       elements.summaryLevels.textContent = selectedLevelNames.length > 0 ? selectedLevelNames.join("、") : "未选择";
-      elements.summaryType.textContent = state.wordType;
-      elements.summaryMeaningCount.textContent = `${state.meanings.length} 条`;
-      elements.summaryStructureCount.textContent = `${state.structures.length} 个成分`;
+      elements.summaryType.textContent = wordTypeLabels[state.wordType] || state.wordType;
+      elements.summaryMeanings.innerHTML = renderMeaningSummary();
+      if (state.wordType === "independent") {
+        elements.summaryStructures.textContent = "独立词，不需要拆解结构";
+      } else if (!state.wordType) {
+        elements.summaryStructures.textContent = "请先选择词条类型";
+      } else {
+        elements.summaryStructures.innerHTML = renderStructureSummary();
+      }
+      elements.summaryOrigin.textContent = origin || "未填写";
+    }
+
+    function renderSummaryList(items, renderItem, emptyText) {
+      if (!items || items.length === 0) {
+        return escapeHtml(emptyText);
+      }
+
+      return `<ol>${items.map(item => `<li>${renderItem(item)}</li>`).join("")}</ol>`;
+    }
+
+    function renderMeaningSummary() {
+      if (state.meanings.length === 0) {
+        return "未添加";
+      }
+
+      const groups = new Map();
+      state.meanings.forEach(meaning => {
+        if (!groups.has(meaning.type)) {
+          groups.set(meaning.type, []);
+        }
+        groups.get(meaning.type).push(meaning.chinese);
+      });
+
+      return Array.from(groups.entries())
+        .map(([type, meanings]) => {
+          const items = meanings.map(text => `<li>${escapeHtml(text)}</li>`).join("");
+          return `<div><strong>${escapeHtml(type)}</strong><ol>${items}</ol></div>`;
+        })
+        .join("");
+    }
+
+    function renderStructureSummary() {
+      if (state.structures.length === 0) {
+        return "未添加";
+      }
+
+      const groups = new Map();
+      state.structures.forEach(structure => {
+        const key = `${structure.role}::${structure.part}`;
+        if (!groups.has(key)) {
+          groups.set(key, {
+            role: structure.role,
+            part: structure.part,
+            meanings: []
+          });
+        }
+        groups.get(key).meanings.push(structure.meaning);
+      });
+
+      return Array.from(groups.values())
+        .map(group => {
+          const title = `${escapeHtml(roleLabels[group.role] || group.role)} ${escapeHtml(group.part)}`;
+          const items = group.meanings.map(text => `<li>${escapeHtml(text)}</li>`).join("");
+          return `<div><strong>${title}</strong><ol>${items}</ol></div>`;
+        })
+        .join("");
+    }
+
+    function resetFormForNewSubmission() {
+      elements.form.reset();
+      state.tab = "new";
+      state.selectedLevels = [];
+      state.wordType = "independent";
+      state.selectedPartOfSpeech = "n.";
+      state.selectedRole = "prefix";
+      state.selectedCorrectionWord = "";
+      state.meanings = [];
+      state.structures = [];
+      state.status = "待填写";
+      elements.successActions.classList.remove("visible");
+      elements.submitButton.classList.remove("hidden");
+      elements.tabs.forEach(button => button.classList.toggle("active", button.dataset.tab === "new"));
+      update();
+    }
+
+    function rememberLatestSubmission(payload) {
+      if (!payload.word_form) {
+        return;
+      }
+
+      const card = document.createElement("div");
+      card.className = "placeholder-card";
+      card.innerHTML = `
+        <h2>我的提交：${escapeHtml(payload.word_form)}</h2>
+        <p>状态：已提交审核。词条类型：${escapeHtml(wordTypeLabels[payload.word_type] || payload.word_type)}。</p>
+      `;
+      elements.latestSubmissionList.innerHTML = "";
+      elements.latestSubmissionList.appendChild(card);
     }
 
     function escapeHtml(value) {
@@ -1036,14 +1608,33 @@
         addMeaning();
       }
     });
-    elements.showStructureButton.addEventListener("click", () => {
-      state.structureForcedOpen = true;
-      update();
-    });
     elements.addStructureButton.addEventListener("click", addStructure);
+    elements.searchWordButton.addEventListener("click", searchExistingWord);
+    elements.targetWord.addEventListener("input", () => {
+      state.selectedCorrectionWord = "";
+      clearInvalid(elements.targetWord);
+    });
+    elements.targetWord.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        searchExistingWord();
+      }
+    });
     elements.submitButton.addEventListener("click", submitPreview);
-    elements.draftButton.addEventListener("click", saveDraft);
-    elements.closeButton.addEventListener("click", () => setStatus("已关闭（原型不隐藏页面）"));
+    elements.newSubmissionButton.addEventListener("click", resetFormForNewSubmission);
+    elements.viewMineButton.addEventListener("click", () => switchTab("mine"));
+    elements.closeButton.addEventListener("click", () => {
+      window.location.href = "../";
+    });
+    [elements.wordInput, elements.ipaInput, elements.originInput].forEach(input => {
+      input.addEventListener("input", () => {
+        clearInvalid(input);
+        update();
+      });
+    });
+    [elements.meaningInput, elements.partInput, elements.structureMeaningInput].forEach(input => {
+      input.addEventListener("input", () => clearInvalid(input));
+    });
 
     update();
   </script>
