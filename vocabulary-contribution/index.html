@@ -489,11 +489,15 @@
 
     .dialog-footer {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
       padding: 12px 18px 16px;
       background: #fff0f7;
       border-top: 1px solid var(--line);
+    }
+
+    .dialog-footer.three-actions {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .placeholder-list {
@@ -507,6 +511,18 @@
       border-radius: 10px;
       padding: 12px;
       background: #fff;
+      text-align: left;
+    }
+
+    button.placeholder-card {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    button.placeholder-card:hover,
+    button.placeholder-card:focus-visible {
+      border-color: #bdd2ef;
+      box-shadow: 0 0 0 3px rgba(69, 110, 168, 0.12);
     }
 
     .placeholder-card h2 {
@@ -519,6 +535,46 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
+    }
+
+    .detail-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      grid-column: 1 / -1;
+      margin-bottom: 2px;
+    }
+
+    .sub-tab {
+      min-height: 38px;
+      border-radius: 9px;
+      border: 1px solid #ebd4e2;
+      background: #fff;
+      color: var(--muted);
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .sub-tab.active {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: #24466f;
+    }
+
+    .review-note-input {
+      min-height: 96px;
     }
 
     .hidden {
@@ -733,33 +789,19 @@
 
         </form>
 
-        <section class="placeholder-list hidden" id="reviewPanel">
-          <div class="placeholder-card">
-            <h2>待审核：sunflower</h2>
-            <p>类型：组合词。审核时只投通过/驳回并写备注，不能直接改提交内容。</p>
-          </div>
-          <div class="placeholder-card">
-            <h2>待审核：rebuild</h2>
-            <p>类型：词根词缀词。这里先做列表占位，后续再接真实数据。</p>
-          </div>
-        </section>
+        <section class="placeholder-list hidden" id="reviewPanel"></section>
 
-        <section class="placeholder-list hidden" id="minePanel">
-          <div id="latestSubmissionList"></div>
-          <div class="placeholder-card">
-            <h2>我的提交：ability</h2>
-            <p>状态：待审核。已通过 2/5，驳回 0/3。</p>
-          </div>
-          <div class="placeholder-card">
-            <h2>我的纠错：province</h2>
-            <p>状态：已提交。等待高信誉玩家审核。</p>
-          </div>
-        </section>
+        <section class="detail-panel hidden" id="reviewDetailPanel"></section>
+
+        <section class="placeholder-list hidden" id="minePanel"></section>
+
+        <section class="detail-panel hidden" id="mineDetailPanel"></section>
       </div>
 
-      <footer class="dialog-footer">
-        <button type="button" class="ghost-button" id="closeButton">返回</button>
-        <button type="button" class="submit-button" id="submitButton">提交审核</button>
+      <footer class="dialog-footer" id="dialogFooter">
+        <button type="button" class="ghost-button" id="footerBackButton">返回</button>
+        <button type="button" class="secondary-button hidden" id="footerRejectButton">驳回</button>
+        <button type="button" class="submit-button" id="footerPrimaryButton">提交审核</button>
       </footer>
     </section>
   </main>
@@ -844,6 +886,108 @@
       }
     ];
 
+    const reviewSubmissions = [
+      {
+        id: "review_sunflower",
+        source: "review",
+        submissionType: "new_word",
+        word: "sunflower",
+        ipa: "ˈsʌnflaʊər",
+        levels: [2, 3],
+        wordType: "compound",
+        meanings: [
+          { type: "n.", chinese: "向日葵" }
+        ],
+        structures: [
+          { role: "word", part: "sun", meaning: "太阳", refID: 0 },
+          { role: "word", part: "flower", meaning: "花", refID: 0 }
+        ],
+        origin: "sun + flower，字面意思是太阳花。",
+        status: "待我审核",
+        progress: "已通过 1/5，驳回 0/3",
+        notes: []
+      },
+      {
+        id: "review_rebuild",
+        source: "review",
+        submissionType: "new_word",
+        word: "rebuild",
+        ipa: "ˌriːˈbɪld",
+        levels: [3, 4],
+        wordType: "morphology",
+        meanings: [
+          { type: "v.", chinese: "重建" }
+        ],
+        structures: [
+          { role: "prefix", part: "re", meaning: "再", refID: 0 },
+          { role: "root", part: "build", meaning: "建造", refID: 0 }
+        ],
+        origin: "re + build，表示重新建造。",
+        status: "待我审核",
+        progress: "已通过 2/5，驳回 0/3",
+        notes: []
+      }
+    ];
+
+    const mySubmissions = [
+      {
+        id: "mine_ability",
+        source: "mine",
+        submissionType: "new_word",
+        word: "ability",
+        ipa: "əˈbɪləti",
+        levels: [2, 3, 4],
+        wordType: "independent",
+        meanings: [
+          { type: "n.", chinese: "能力" },
+          { type: "n.", chinese: "才能" }
+        ],
+        structures: [],
+        origin: "ability 表示能力或才能。",
+        status: "待审核",
+        progress: "已通过 2/5，驳回 0/3",
+        notes: []
+      },
+      {
+        id: "mine_sunflower",
+        source: "mine",
+        submissionType: "new_word",
+        word: "sunflower",
+        ipa: "ˈsʌnflaʊər",
+        levels: [2, 3],
+        wordType: "compound",
+        meanings: [
+          { type: "n.", chinese: "向日葵" }
+        ],
+        structures: [
+          { role: "word", part: "sun", meaning: "太阳", refID: 0 },
+          { role: "word", part: "flower", meaning: "花", refID: 0 }
+        ],
+        origin: "sun + flower，字面意思是太阳花。",
+        status: "已通过",
+        progress: "审核完成",
+        notes: ["结构拆分清晰，释义准确。"]
+      },
+      {
+        id: "mine_province",
+        source: "mine",
+        submissionType: "correction",
+        targetWord: "province",
+        word: "province",
+        ipa: "ˈprɑːvɪns",
+        levels: [3, 4],
+        wordType: "independent",
+        meanings: [
+          { type: "n.", chinese: "省份" }
+        ],
+        structures: [],
+        origin: "province 表示省份或行政区域。",
+        status: "已驳回",
+        progress: "已通过 1/5，驳回 3/3",
+        notes: ["音标建议使用英式或美式其中一种标准写法，并补充常见中文释义。"]
+      }
+    ];
+
     const state = {
       tab: "new",
       selectedLevels: [],
@@ -851,6 +995,11 @@
       selectedPartOfSpeech: "n.",
       selectedRole: "prefix",
       selectedCorrectionWord: "",
+      selectedReviewId: "",
+      selectedMineId: "",
+      reviewFilter: "pending",
+      mineFilter: "pending",
+      editingSubmissionId: "",
       meanings: [],
       structures: [],
       status: "待填写"
@@ -860,7 +1009,9 @@
       tabs: Array.from(document.querySelectorAll(".tab")),
       form: document.getElementById("contributionForm"),
       reviewPanel: document.getElementById("reviewPanel"),
+      reviewDetailPanel: document.getElementById("reviewDetailPanel"),
       minePanel: document.getElementById("minePanel"),
+      mineDetailPanel: document.getElementById("mineDetailPanel"),
       correctionOnly: Array.from(document.querySelectorAll(".correction-only")),
       wordInput: document.getElementById("wordInput"),
       ipaInput: document.getElementById("ipaInput"),
@@ -891,12 +1042,13 @@
       summaryStructures: document.getElementById("summaryStructures"),
       summaryOrigin: document.getElementById("summaryOrigin"),
       formMessage: document.getElementById("formMessage"),
-      closeButton: document.getElementById("closeButton"),
-      submitButton: document.getElementById("submitButton"),
+      dialogFooter: document.getElementById("dialogFooter"),
+      footerBackButton: document.getElementById("footerBackButton"),
+      footerRejectButton: document.getElementById("footerRejectButton"),
+      footerPrimaryButton: document.getElementById("footerPrimaryButton"),
       successActions: document.getElementById("successActions"),
       newSubmissionButton: document.getElementById("newSubmissionButton"),
-      viewMineButton: document.getElementById("viewMineButton"),
-      latestSubmissionList: document.getElementById("latestSubmissionList")
+      viewMineButton: document.getElementById("viewMineButton")
     };
 
     function createChoice(label, attrs = {}) {
@@ -1277,6 +1429,439 @@
       elements.formMessage.textContent = message;
     }
 
+    function getLevelNames(codes) {
+      return (codes || [])
+        .map(code => levels.find(level => level.code === code)?.name)
+        .filter(Boolean);
+    }
+
+    function getSubmissionTitle(item) {
+      return item.submissionType === "correction" ? `纠错：${item.word}` : `提交：${item.word}`;
+    }
+
+    function isReviewPending(item) {
+      return item.status === "待我审核";
+    }
+
+    function isMinePending(item) {
+      return item.status === "待审核";
+    }
+
+    function isMineApproved(item) {
+      return item.status === "已通过" || item.status === "已通过审核";
+    }
+
+    function isMineRejected(item) {
+      return item.status === "已驳回";
+    }
+
+    function createSubmissionFromPayload(payload, existingId = "") {
+      const isCorrection = payload.submission_type === "correction";
+      return {
+        id: existingId || `mine_${Date.now()}`,
+        source: "mine",
+        submissionType: payload.submission_type,
+        targetWord: payload.target_word,
+        word: payload.word_form,
+        ipa: payload.phonetic.ipa,
+        levels: payload.language_levels.map(level => level.language_level_code),
+        wordType: payload.word_type,
+        meanings: payload.detail.map(meaning => ({ ...meaning })),
+        structures: payload.structure.map(structure => ({ ...structure })),
+        origin: payload.origin,
+        status: "待审核",
+        progress: "已通过 0/5，驳回 0/3",
+        notes: existingId ? ["已根据驳回意见重新提交，等待再次审核。"] : [],
+        titlePrefix: isCorrection ? "我的纠错" : "我的提交"
+      };
+    }
+
+    function renderMeaningGroupsForItem(item) {
+      if (!item.meanings || item.meanings.length === 0) {
+        return "未添加";
+      }
+
+      const groups = new Map();
+      item.meanings.forEach(meaning => {
+        if (!groups.has(meaning.type)) {
+          groups.set(meaning.type, []);
+        }
+        groups.get(meaning.type).push(meaning.chinese);
+      });
+
+      return Array.from(groups.entries())
+        .map(([type, meanings]) => {
+          const items = meanings.map(text => `<li>${escapeHtml(text)}</li>`).join("");
+          return `<div><strong>${escapeHtml(type)}</strong><ol>${items}</ol></div>`;
+        })
+        .join("");
+    }
+
+    function renderStructureGroupsForItem(item) {
+      if (item.wordType === "independent") {
+        return "独立词，不需要拆解结构";
+      }
+      if (!item.structures || item.structures.length === 0) {
+        return "未添加";
+      }
+
+      const groups = new Map();
+      item.structures.forEach(structure => {
+        const key = `${structure.role}::${structure.part}`;
+        if (!groups.has(key)) {
+          groups.set(key, {
+            role: structure.role,
+            part: structure.part,
+            meanings: []
+          });
+        }
+        groups.get(key).meanings.push(structure.meaning);
+      });
+
+      return Array.from(groups.values())
+        .map(group => {
+          const title = `${escapeHtml(roleLabels[group.role] || group.role)} ${escapeHtml(group.part)}`;
+          const items = group.meanings.map(text => `<li>${escapeHtml(text)}</li>`).join("");
+          return `<div><strong>${title}</strong><ol>${items}</ol></div>`;
+        })
+        .join("");
+    }
+
+    function renderSubmissionDetailRows(item) {
+      const levelText = getLevelNames(item.levels).join("、") || "未选择";
+      const typeText = wordTypeLabels[item.wordType] || item.wordType;
+      const targetRow = item.submissionType === "correction" ? `
+        <div class="review-row">
+          <div class="review-label">纠错目标</div>
+          <div class="review-value">${escapeHtml(item.targetWord || item.word)}</div>
+        </div>
+      ` : "";
+
+      return `
+        ${targetRow}
+        <div class="review-row">
+          <div class="review-label">单词</div>
+          <div class="review-value">${escapeHtml(item.word)}</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">音标</div>
+          <div class="review-value">${item.ipa ? `[${escapeHtml(item.ipa)}]` : "未填写"}</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">单词等级</div>
+          <div class="review-value">${escapeHtml(levelText)}</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">词条类型</div>
+          <div class="review-value">${escapeHtml(typeText)}</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">释义</div>
+          <div class="review-value">${renderMeaningGroupsForItem(item)}</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">构词结构</div>
+          <div class="review-value">${renderStructureGroupsForItem(item)}</div>
+        </div>
+        <div class="review-row">
+          <div class="review-label">词源/补充说明</div>
+          <div class="review-value">${escapeHtml(item.origin || "未填写")}</div>
+        </div>
+      `;
+    }
+
+    function renderSubmissionCard(item, mode) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "placeholder-card";
+      const reviewTitle = `${item.status === "待我审核" ? "待审核" : item.status}：${item.word}`;
+      const title = mode === "review" ? reviewTitle : `${item.titlePrefix || "我的提交"}：${item.word}`;
+      const typeText = wordTypeLabels[item.wordType] || item.wordType;
+      button.innerHTML = `
+        <h2>${escapeHtml(title)}</h2>
+        <p>${escapeHtml(typeText)} / ${escapeHtml(item.status)}。${escapeHtml(item.progress || "")}</p>
+      `;
+      button.addEventListener("click", () => {
+        if (mode === "review") {
+          state.selectedReviewId = item.id;
+        } else {
+          state.selectedMineId = item.id;
+        }
+        update();
+      });
+      return button;
+    }
+
+    function createSubTab(label, active, onClick) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = active ? "sub-tab active" : "sub-tab";
+      button.textContent = label;
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    function renderEmptyList(container, message) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = message;
+      container.appendChild(empty);
+    }
+
+    function renderReviewList() {
+      elements.reviewPanel.innerHTML = "";
+      const subTabs = document.createElement("div");
+      subTabs.className = "sub-tabs";
+      const pendingCount = reviewSubmissions.filter(isReviewPending).length;
+      const completedCount = reviewSubmissions.length - pendingCount;
+      subTabs.appendChild(createSubTab(`待审核 ${pendingCount}`, state.reviewFilter === "pending", () => {
+        state.reviewFilter = "pending";
+        update();
+      }));
+      subTabs.appendChild(createSubTab(`已审核 ${completedCount}`, state.reviewFilter === "completed", () => {
+        state.reviewFilter = "completed";
+        update();
+      }));
+      elements.reviewPanel.appendChild(subTabs);
+
+      const visibleItems = reviewSubmissions.filter(item =>
+        state.reviewFilter === "pending" ? isReviewPending(item) : !isReviewPending(item)
+      );
+      if (visibleItems.length === 0) {
+        renderEmptyList(elements.reviewPanel, state.reviewFilter === "pending" ? "当前没有待审核词条。" : "还没有已审核记录。");
+        return;
+      }
+      visibleItems.forEach(item => {
+        elements.reviewPanel.appendChild(renderSubmissionCard(item, "review"));
+      });
+    }
+
+    function renderMineList() {
+      elements.minePanel.innerHTML = "";
+      const subTabs = document.createElement("div");
+      subTabs.className = "sub-tabs";
+      const pendingCount = mySubmissions.filter(isMinePending).length;
+      const approvedCount = mySubmissions.filter(isMineApproved).length;
+      const rejectedCount = mySubmissions.filter(isMineRejected).length;
+      subTabs.appendChild(createSubTab(`待审核 ${pendingCount}`, state.mineFilter === "pending", () => {
+        state.mineFilter = "pending";
+        update();
+      }));
+      subTabs.appendChild(createSubTab(`已通过 ${approvedCount}`, state.mineFilter === "approved", () => {
+        state.mineFilter = "approved";
+        update();
+      }));
+      subTabs.appendChild(createSubTab(`需修改 ${rejectedCount}`, state.mineFilter === "rejected", () => {
+        state.mineFilter = "rejected";
+        update();
+      }));
+      elements.minePanel.appendChild(subTabs);
+
+      const visibleItems = mySubmissions.filter(item => {
+        if (state.mineFilter === "approved") {
+          return isMineApproved(item);
+        }
+        if (state.mineFilter === "rejected") {
+          return isMineRejected(item);
+        }
+        return isMinePending(item);
+      });
+      if (visibleItems.length === 0) {
+        const emptyText = state.mineFilter === "approved"
+          ? "还没有通过审核的提交。"
+          : state.mineFilter === "rejected"
+            ? "当前没有需要修改的提交。"
+            : "当前没有等待审核的提交。";
+        renderEmptyList(elements.minePanel, emptyText);
+        return;
+      }
+      visibleItems.forEach(item => {
+        elements.minePanel.appendChild(renderSubmissionCard(item, "mine"));
+      });
+    }
+
+    function renderReviewDetail() {
+      const item = reviewSubmissions.find(submission => submission.id === state.selectedReviewId);
+      if (!item) {
+        state.selectedReviewId = "";
+        renderReviewList();
+        return;
+      }
+
+      const notes = item.notes.length > 0
+        ? `<ol>${item.notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ol>`
+        : "暂无建议";
+      const reviewAction = isReviewPending(item) ? `
+        <section class="section">
+          <h2 class="section-title">审核建议</h2>
+          <textarea class="review-note-input" id="reviewNoteInput" maxlength="300" placeholder="只能填写建议，不能直接修改提交内容"></textarea>
+          <p class="hint" id="reviewActionMessage">确认后会更新当前前端原型里的审核状态，并自动返回列表。</p>
+        </section>
+      ` : "";
+      elements.reviewDetailPanel.innerHTML = `
+        <section class="section">
+          <h2 class="section-title">${escapeHtml(item.status === "待我审核" ? "待我审核" : item.status)}：${escapeHtml(item.word)}</h2>
+          <div class="review-list">
+            <div class="review-row">
+              <div class="review-label">审核状态</div>
+              <div class="review-value">${escapeHtml(item.status)}。${escapeHtml(item.progress || "")}</div>
+            </div>
+            ${renderSubmissionDetailRows(item)}
+            <div class="review-row">
+              <div class="review-label">已有审核建议</div>
+              <div class="review-value">${notes}</div>
+            </div>
+          </div>
+        </section>
+        ${reviewAction}
+      `;
+    }
+
+    function renderMineDetail() {
+      const item = mySubmissions.find(submission => submission.id === state.selectedMineId);
+      if (!item) {
+        state.selectedMineId = "";
+        renderMineList();
+        return;
+      }
+
+      const notes = item.notes.length > 0
+        ? `<ol>${item.notes.map(note => `<li>${escapeHtml(note)}</li>`).join("")}</ol>`
+        : "暂无建议";
+      elements.mineDetailPanel.innerHTML = `
+        <section class="section">
+          <h2 class="section-title">${escapeHtml(item.titlePrefix || "我的提交")}：${escapeHtml(item.word)}</h2>
+          <div class="review-list">
+            <div class="review-row">
+              <div class="review-label">当前状态</div>
+              <div class="review-value">${escapeHtml(item.status)}。${escapeHtml(item.progress || "")}</div>
+            </div>
+            ${renderSubmissionDetailRows(item)}
+            <div class="review-row">
+              <div class="review-label">审核建议记录</div>
+              <div class="review-value">${notes}</div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function submitReviewDecision(id, decision) {
+      const item = reviewSubmissions.find(submission => submission.id === id);
+      const noteInput = document.getElementById("reviewNoteInput");
+      const message = document.getElementById("reviewActionMessage");
+      if (!item || !noteInput || !message) {
+        return;
+      }
+
+      const note = normalizeMeaning(noteInput.value);
+      if (!note) {
+        message.textContent = "请先填写审核建议。";
+        noteInput.focus();
+        return;
+      }
+      if (note.length > 300 || hasUnsafeText(note)) {
+        message.textContent = "审核建议不要超过 300 字，且不能包含 < 或 >。";
+        noteInput.focus();
+        return;
+      }
+
+      item.notes.push(`${decision}：${note}`);
+      item.status = decision === "通过" ? "已通过" : "已驳回";
+      item.progress = decision === "通过" ? "已通过 5/5，驳回 0/3" : "已通过 2/5，驳回 3/3";
+      state.reviewFilter = "pending";
+      state.selectedReviewId = "";
+      update();
+      setStatus(decision === "通过" ? "已提交通过意见，可继续审核下一条。" : "已提交驳回意见，可继续审核下一条。");
+    }
+
+    function backFromFooter() {
+      if (state.tab === "review" && state.selectedReviewId) {
+        state.selectedReviewId = "";
+        update();
+        return;
+      }
+      if (state.tab === "mine" && state.selectedMineId) {
+        state.selectedMineId = "";
+        update();
+        return;
+      }
+      window.location.href = "../";
+    }
+
+    function primaryFromFooter() {
+      if (state.tab === "review" && state.selectedReviewId) {
+        submitReviewDecision(state.selectedReviewId, "通过");
+        return;
+      }
+      if (state.tab === "mine" && state.selectedMineId) {
+        const item = mySubmissions.find(submission => submission.id === state.selectedMineId);
+        if (item && item.status === "已驳回") {
+          editRejectedSubmission(item.id);
+        }
+        return;
+      }
+      submitPreview();
+    }
+
+    function rejectFromFooter() {
+      if (state.tab === "review" && state.selectedReviewId) {
+        submitReviewDecision(state.selectedReviewId, "驳回");
+      }
+    }
+
+    function renderFooterActions(isFormTab, isReviewDetail, isMineDetail) {
+      const mineItem = isMineDetail
+        ? mySubmissions.find(submission => submission.id === state.selectedMineId)
+        : null;
+      const reviewItem = isReviewDetail
+        ? reviewSubmissions.find(submission => submission.id === state.selectedReviewId)
+        : null;
+      const showMineEdit = !!mineItem && mineItem.status === "已驳回";
+      const showReviewActions = !!reviewItem && isReviewPending(reviewItem);
+      const shouldShowFooter = isFormTab || isReviewDetail || isMineDetail;
+
+      elements.dialogFooter.classList.toggle("hidden", !shouldShowFooter);
+      elements.dialogFooter.classList.toggle("three-actions", showReviewActions);
+      elements.footerRejectButton.classList.toggle("hidden", !showReviewActions);
+      elements.footerBackButton.textContent = isFormTab ? "返回" : "返回列表";
+      elements.footerPrimaryButton.textContent = showReviewActions ? "通过" : showMineEdit ? "修改后重新提交" : "提交审核";
+      elements.footerPrimaryButton.disabled = isMineDetail && !showMineEdit;
+      elements.footerPrimaryButton.classList.toggle("hidden", (isFormTab && elements.successActions.classList.contains("visible")) || (isReviewDetail && !showReviewActions) || (isMineDetail && !showMineEdit));
+    }
+
+    function fillFormFromSubmission(item) {
+      elements.wordInput.value = item.word;
+      elements.ipaInput.value = item.ipa ? `[${item.ipa}]` : "";
+      elements.originInput.value = item.origin || "";
+      elements.targetWord.value = item.targetWord || item.word;
+      elements.searchResults.innerHTML = "";
+      state.selectedCorrectionWord = item.submissionType === "correction" ? (item.targetWord || item.word) : "";
+      state.selectedLevels = item.levels.slice();
+      state.wordType = item.wordType;
+      state.selectedRole = getAllowedRoles()[0] || "";
+      state.meanings = item.meanings.map(meaning => ({ ...meaning }));
+      state.structures = item.structures.map(structure => ({ ...structure }));
+    }
+
+    function editRejectedSubmission(id) {
+      const item = mySubmissions.find(submission => submission.id === id);
+      if (!item || item.status !== "已驳回") {
+        return;
+      }
+
+      state.editingSubmissionId = id;
+      state.selectedMineId = "";
+      state.mineFilter = "pending";
+      state.tab = item.submissionType === "correction" ? "correction" : "new";
+      elements.tabs.forEach(button => button.classList.toggle("active", button.dataset.tab === state.tab));
+      fillFormFromSubmission(item);
+      elements.successActions.classList.remove("visible");
+      elements.footerPrimaryButton.classList.remove("hidden");
+      setStatus("已带入被驳回的提交，请修改后重新提交审核。");
+      update();
+    }
+
     function buildPayload() {
       const selectedLevelObjects = state.selectedLevels.map(code => levels.find(level => level.code === code));
       return {
@@ -1401,7 +1986,7 @@
 
     function submitPreview() {
       if (state.tab === "review" || state.tab === "mine") {
-        setStatus("当前页是占位列表，不能提交。");
+        setStatus("当前页不能提交，请回到录入或纠错表单。");
         return;
       }
 
@@ -1413,15 +1998,18 @@
         return;
       }
 
+      const wasEditingRejectedSubmission = !!state.editingSubmissionId;
       payload.client_status = "已提交审核";
       rememberLatestSubmission(payload);
-      elements.submitButton.classList.add("hidden");
+      elements.footerPrimaryButton.classList.add("hidden");
       elements.successActions.classList.add("visible");
-      setStatus("已提交审核。你可以继续提交新词，或查看我的提交。");
+      setStatus(wasEditingRejectedSubmission ? "已重新提交审核。你可以查看我的提交。" : "已提交审核。你可以继续提交新词，或查看我的提交。");
     }
 
     function switchTab(tab) {
       state.tab = tab;
+      state.selectedReviewId = "";
+      state.selectedMineId = "";
       if (tab !== "correction") {
         state.selectedCorrectionWord = "";
       }
@@ -1431,15 +2019,17 @@
 
     function update() {
       const isFormTab = state.tab === "new" || state.tab === "correction";
+      const isReviewDetail = state.tab === "review" && !!state.selectedReviewId;
+      const isMineDetail = state.tab === "mine" && !!state.selectedMineId;
       elements.form.classList.toggle("hidden", !isFormTab);
-      elements.reviewPanel.classList.toggle("hidden", state.tab !== "review");
-      elements.minePanel.classList.toggle("hidden", state.tab !== "mine");
+      elements.reviewPanel.classList.toggle("hidden", state.tab !== "review" || isReviewDetail);
+      elements.reviewDetailPanel.classList.toggle("hidden", !isReviewDetail);
+      elements.minePanel.classList.toggle("hidden", state.tab !== "mine" || isMineDetail);
+      elements.mineDetailPanel.classList.toggle("hidden", !isMineDetail);
       elements.correctionOnly.forEach(node => node.classList.toggle("hidden", state.tab !== "correction"));
 
-      elements.submitButton.disabled = !isFormTab;
-      if (isFormTab && !elements.successActions.classList.contains("visible")) {
-        elements.submitButton.classList.remove("hidden");
-      }
+      elements.dialogFooter.classList.toggle("hidden", !isFormTab);
+      renderFooterActions(isFormTab, isReviewDetail, isMineDetail);
 
       elements.levelChoices.querySelectorAll("[data-level-code]").forEach(button => {
         const code = Number(button.dataset.levelCode);
@@ -1468,13 +2058,21 @@
         renderStructures();
       }
       updateSummary();
+      renderReviewList();
+      renderMineList();
+      if (isReviewDetail) {
+        renderReviewDetail();
+      }
+      if (isMineDetail) {
+        renderMineDetail();
+      }
 
       if (state.tab === "review") {
         elements.successActions.classList.remove("visible");
-        setStatus("待审核列表");
+        setStatus(isReviewDetail ? "审核详情" : "待审核列表");
       } else if (state.tab === "mine") {
         elements.successActions.classList.remove("visible");
-        setStatus("我的提交");
+        setStatus(isMineDetail ? "提交详情" : "我的提交");
       } else if (!state.status || state.status === "待审核列表" || state.status === "我的提交") {
         setStatus("待填写");
       }
@@ -1566,11 +2164,14 @@
       state.selectedPartOfSpeech = "n.";
       state.selectedRole = "prefix";
       state.selectedCorrectionWord = "";
+      state.selectedReviewId = "";
+      state.selectedMineId = "";
+      state.editingSubmissionId = "";
       state.meanings = [];
       state.structures = [];
       state.status = "待填写";
       elements.successActions.classList.remove("visible");
-      elements.submitButton.classList.remove("hidden");
+      elements.footerPrimaryButton.classList.remove("hidden");
       elements.tabs.forEach(button => button.classList.toggle("active", button.dataset.tab === "new"));
       update();
     }
@@ -1580,14 +2181,19 @@
         return;
       }
 
-      const card = document.createElement("div");
-      card.className = "placeholder-card";
-      card.innerHTML = `
-        <h2>我的提交：${escapeHtml(payload.word_form)}</h2>
-        <p>状态：已提交审核。词条类型：${escapeHtml(wordTypeLabels[payload.word_type] || payload.word_type)}。</p>
-      `;
-      elements.latestSubmissionList.innerHTML = "";
-      elements.latestSubmissionList.appendChild(card);
+      const existingId = state.editingSubmissionId;
+      const submission = createSubmissionFromPayload(payload, existingId);
+      if (existingId) {
+        const index = mySubmissions.findIndex(item => item.id === existingId);
+        if (index >= 0) {
+          mySubmissions[index] = submission;
+        } else {
+          mySubmissions.unshift(submission);
+        }
+      } else {
+        mySubmissions.unshift(submission);
+      }
+      state.editingSubmissionId = "";
     }
 
     function escapeHtml(value) {
@@ -1620,12 +2226,11 @@
         searchExistingWord();
       }
     });
-    elements.submitButton.addEventListener("click", submitPreview);
+    elements.footerBackButton.addEventListener("click", backFromFooter);
+    elements.footerRejectButton.addEventListener("click", rejectFromFooter);
+    elements.footerPrimaryButton.addEventListener("click", primaryFromFooter);
     elements.newSubmissionButton.addEventListener("click", resetFormForNewSubmission);
     elements.viewMineButton.addEventListener("click", () => switchTab("mine"));
-    elements.closeButton.addEventListener("click", () => {
-      window.location.href = "../";
-    });
     [elements.wordInput, elements.ipaInput, elements.originInput].forEach(input => {
       input.addEventListener("input", () => {
         clearInvalid(input);
