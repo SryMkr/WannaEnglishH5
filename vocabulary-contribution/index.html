@@ -681,7 +681,7 @@
             </div>
 
             <div class="field">
-              <div class="field-label">单词等级</div>
+              <div class="field-label">单词等级（可多选）</div>
               <div class="choice-grid" id="levelChoices"></div>
             </div>
 
@@ -806,6 +806,7 @@
     </section>
   </main>
 
+  <script src="../shared/app.js"></script>
   <script>
     const levels = [
       { code: 1, name: "小学" },
@@ -817,7 +818,7 @@
       { code: 7, name: "托福" }
     ];
 
-    const partOfSpeechOptions = ["n.", "v.", "adj.", "adv.", "prep.", "conj.", "pron.", "phrase", "other"];
+    const partOfSpeechOptions = ["n.", "v.", "adj.", "adv.", "prep.", "conj.", "pron.", "other"];
     const roleLabels = {
       prefix: "前缀",
       root: "词根",
@@ -886,7 +887,7 @@
       }
     ];
 
-    const reviewSubmissions = [
+    let reviewSubmissions = [
       {
         id: "review_sunflower",
         source: "review",
@@ -929,7 +930,7 @@
       }
     ];
 
-    const mySubmissions = [
+    let mySubmissions = [
       {
         id: "mine_ability",
         source: "mine",
@@ -1004,6 +1005,14 @@
       structures: [],
       status: "待填写"
     };
+
+    async function requestJson(path, options = {}) {
+      return window.WannaEnglishH5.requestJson(path, options);
+    }
+
+    function readLinkIdentity() {
+      return window.WannaEnglishH5.readIdentity();
+    }
 
     const elements = {
       tabs: Array.from(document.querySelectorAll(".tab")),
@@ -1180,6 +1189,27 @@
       return value.trim().replace(/\s+/g, " ");
     }
 
+    function splitMeaningText(value) {
+      return normalizeMeaning(String(value || ""))
+        .split(/[;；、，,]/)
+        .map(text => normalizeMeaning(text))
+        .filter(Boolean);
+    }
+
+    function normalizeStructureList(structures) {
+      if (!Array.isArray(structures)) {
+        return [];
+      }
+
+      return structures.flatMap(structure => {
+        const meanings = splitMeaningText(structure.meaning);
+        return meanings.map(meaning => ({
+          ...structure,
+          meaning
+        }));
+      });
+    }
+
     function addMeaning() {
       const chinese = normalizeMeaning(elements.meaningInput.value);
       if (!chinese) {
@@ -1270,7 +1300,7 @@
       update();
     }
 
-    function searchExistingWord() {
+    async function searchExistingWord() {
       const query = elements.targetWord.value.trim().toLowerCase();
       elements.searchResults.innerHTML = "";
       state.selectedCorrectionWord = "";
@@ -1286,7 +1316,16 @@
         return;
       }
 
-      const matches = sampleWords.filter(item => item.word.includes(query));
+      setStatus("正在搜索词库...");
+      let matches = [];
+      try {
+        const data = await requestJson(`/vocabulary-contribution/search-word?query=${encodeURIComponent(query)}`);
+        matches = data.words || [];
+      } catch (error) {
+        setStatus(`搜索失败：${error.message || "请稍后重试"}`);
+        return;
+      }
+
       if (matches.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
@@ -1320,7 +1359,7 @@
       state.wordType = item.wordType;
       state.selectedRole = getAllowedRoles()[0] || "";
       state.meanings = item.meanings.map(meaning => ({ ...meaning }));
-      state.structures = item.structures.map(structure => ({ ...structure }));
+      state.structures = normalizeStructureList(item.structures);
       elements.searchResults.innerHTML = "";
       clearInvalid(elements.targetWord);
       setStatus("已带入词库中的原词条，可在下方编辑后提交纠错。");
@@ -1429,6 +1468,50 @@
       elements.formMessage.textContent = message;
     }
 
+    function normalizeServerSubmission(item, source) {
+      return {
+        id: String(item.id || item.contributionID),
+        contributionID: item.contributionID || Number(item.id),
+        source,
+        submissionType: item.submissionType,
+        targetWord: item.targetWord || "",
+        word: item.word,
+        ipa: item.ipa || "",
+        levels: Array.isArray(item.levels) ? item.levels.map(Number).filter(Number.isInteger) : [],
+        wordType: item.wordType,
+        meanings: Array.isArray(item.meanings) ? item.meanings : [],
+        structures: normalizeStructureList(item.structures),
+        origin: item.origin || "",
+        status: item.status,
+        progress: item.progress || "",
+        notes: Array.isArray(item.notes) ? item.notes : [],
+        submitterUserName: item.submitterUserName || "",
+        titlePrefix: item.titlePrefix || (item.submissionType === "correction" ? "我的纠错" : "我的提交")
+      };
+    }
+
+    async function loadMineSubmissions() {
+      const identity = readLinkIdentity();
+      if (!Number.isInteger(identity.userID) || identity.userID <= 0) {
+        mySubmissions = [];
+        return;
+      }
+
+      const data = await requestJson(`/vocabulary-contribution/mine?userID=${encodeURIComponent(identity.userID)}`);
+      mySubmissions = (data.submissions || []).map(item => normalizeServerSubmission(item, "mine"));
+    }
+
+    async function loadReviewSubmissions() {
+      const identity = readLinkIdentity();
+      if (!Number.isInteger(identity.userID) || identity.userID <= 0) {
+        reviewSubmissions = [];
+        return;
+      }
+
+      const data = await requestJson(`/vocabulary-contribution/review-queue?userID=${encodeURIComponent(identity.userID)}&includeCompleted=true`);
+      reviewSubmissions = (data.submissions || []).map(item => normalizeServerSubmission(item, "review"));
+    }
+
     function getLevelNames(codes) {
       return (codes || [])
         .map(code => levels.find(level => level.code === code)?.name)
@@ -1458,7 +1541,8 @@
     function createSubmissionFromPayload(payload, existingId = "") {
       const isCorrection = payload.submission_type === "correction";
       return {
-        id: existingId || `mine_${Date.now()}`,
+        id: existingId ? String(existingId) : `mine_${Date.now()}`,
+        contributionID: existingId ? Number(existingId) : 0,
         source: "mine",
         submissionType: payload.submission_type,
         targetWord: payload.target_word,
@@ -1746,7 +1830,7 @@
       `;
     }
 
-    function submitReviewDecision(id, decision) {
+    async function submitReviewDecision(id, decision) {
       const item = reviewSubmissions.find(submission => submission.id === id);
       const noteInput = document.getElementById("reviewNoteInput");
       const message = document.getElementById("reviewActionMessage");
@@ -1766,13 +1850,32 @@
         return;
       }
 
-      item.notes.push(`${decision}：${note}`);
-      item.status = decision === "通过" ? "已通过" : "已驳回";
-      item.progress = decision === "通过" ? "已通过 5/5，驳回 0/3" : "已通过 2/5，驳回 3/3";
-      state.reviewFilter = "pending";
-      state.selectedReviewId = "";
-      update();
-      setStatus(decision === "通过" ? "已提交通过意见，可继续审核下一条。" : "已提交驳回意见，可继续审核下一条。");
+      const identity = readLinkIdentity();
+      const decisionValue = decision === "通过" ? "approved" : "rejected";
+      message.textContent = "正在提交审核结果...";
+      elements.footerPrimaryButton.disabled = true;
+      elements.footerRejectButton.disabled = true;
+      try {
+        await requestJson(`/vocabulary-contribution/${encodeURIComponent(item.contributionID || item.id)}/review`, {
+          method: "POST",
+          body: JSON.stringify({
+            userID: identity.userID,
+            userName: identity.userName,
+            decision: decisionValue,
+            note
+          })
+        });
+        await loadReviewSubmissions();
+        state.reviewFilter = "pending";
+        state.selectedReviewId = "";
+        update();
+        setStatus(decision === "通过" ? "已提交通过意见，可继续审核下一条。" : "已提交驳回意见，可继续审核下一条。");
+      } catch (error) {
+        message.textContent = `提交失败：${error.message || "请稍后重试"}`;
+      } finally {
+        elements.footerPrimaryButton.disabled = false;
+        elements.footerRejectButton.disabled = false;
+      }
     }
 
     function backFromFooter() {
@@ -1841,7 +1944,7 @@
       state.wordType = item.wordType;
       state.selectedRole = getAllowedRoles()[0] || "";
       state.meanings = item.meanings.map(meaning => ({ ...meaning }));
-      state.structures = item.structures.map(structure => ({ ...structure }));
+      state.structures = normalizeStructureList(item.structures);
     }
 
     function editRejectedSubmission(id) {
@@ -1863,8 +1966,11 @@
     }
 
     function buildPayload() {
+      const identity = readLinkIdentity();
       const selectedLevelObjects = state.selectedLevels.map(code => levels.find(level => level.code === code));
       return {
+        userID: identity.userID,
+        userName: identity.userName,
         submission_type: state.tab === "correction" ? "correction" : "new_word",
         target_word: state.tab === "correction" ? elements.targetWord.value.trim().toLowerCase() : "",
         correction_reason: "",
@@ -1888,6 +1994,7 @@
           meaning: structure.meaning
         })),
         origin: normalizeMeaning(elements.originInput.value),
+        resubmission_of: state.editingSubmissionId ? Number(state.editingSubmissionId) : undefined,
         client_status: state.status
       };
     }
@@ -1897,6 +2004,9 @@
     }
 
     function validatePayload(payload) {
+      if (!Number.isInteger(payload.userID) || payload.userID <= 0) {
+        return "缺少用户身份，请从游戏内入口打开词条贡献。";
+      }
       if (payload.submission_type === "correction") {
         if (!payload.target_word) {
           return "纠错模式需要填写要纠错的单词。";
@@ -1984,7 +2094,7 @@
       }
     }
 
-    function submitPreview() {
+    async function submitPreview() {
       if (state.tab === "review" || state.tab === "mine") {
         setStatus("当前页不能提交，请回到录入或纠错表单。");
         return;
@@ -2000,13 +2110,26 @@
 
       const wasEditingRejectedSubmission = !!state.editingSubmissionId;
       payload.client_status = "已提交审核";
-      rememberLatestSubmission(payload);
-      elements.footerPrimaryButton.classList.add("hidden");
-      elements.successActions.classList.add("visible");
-      setStatus(wasEditingRejectedSubmission ? "已重新提交审核。你可以查看我的提交。" : "已提交审核。你可以继续提交新词，或查看我的提交。");
+      elements.footerPrimaryButton.disabled = true;
+      setStatus("正在提交审核...");
+      try {
+        await requestJson("/vocabulary-contribution/submit", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+        await loadMineSubmissions();
+        state.editingSubmissionId = "";
+        elements.footerPrimaryButton.classList.add("hidden");
+        elements.successActions.classList.add("visible");
+        setStatus(wasEditingRejectedSubmission ? "已重新提交审核。你可以查看我的提交。" : "已提交审核。你可以继续提交新词，或查看我的提交。");
+      } catch (error) {
+        setStatus(`提交失败：${error.message || "请稍后重试"}`);
+      } finally {
+        elements.footerPrimaryButton.disabled = false;
+      }
     }
 
-    function switchTab(tab) {
+    async function switchTab(tab) {
       state.tab = tab;
       state.selectedReviewId = "";
       state.selectedMineId = "";
@@ -2015,6 +2138,19 @@
       }
       elements.tabs.forEach(button => button.classList.toggle("active", button.dataset.tab === tab));
       update();
+      try {
+        if (tab === "mine") {
+          setStatus("正在加载我的提交...");
+          await loadMineSubmissions();
+          update();
+        } else if (tab === "review") {
+          setStatus("正在加载待审核列表...");
+          await loadReviewSubmissions();
+          update();
+        }
+      } catch (error) {
+        setStatus(`加载失败：${error.message || "请稍后重试"}`);
+      }
     }
 
     function update() {

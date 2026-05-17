@@ -56,9 +56,16 @@
   <main>
     <h1>悦单词玩家中心</h1>
     <div class="links">
-      <a href="./questionnaire/">填写问卷</a>
-      <a href="./vocabulary-contribution/">词条贡献<small>录入新词、纠错词条、查看审核状态</small></a>
+      <a href="./questionnaire/" data-user-link>填写问卷</a>
+      <a href="./vocabulary-contribution/" data-user-link>词条贡献<small>录入新词、纠错词条、查看审核状态</small></a>
     </div>
   </main>
+  <script src="./shared/app.js"></script>
+  <script>
+    const identity = window.WannaEnglishH5.readIdentity();
+    document.querySelectorAll("[data-user-link]").forEach(link => {
+      link.href = window.WannaEnglishH5.appendIdentityToUrl(link.getAttribute("href"), identity);
+    });
+  </script>
 </body>
 </html>

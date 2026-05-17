@@ -259,33 +259,10 @@
 
     .user-card {
       grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 10px;
-      align-items: center;
       border-radius: 9px;
       background: rgba(255, 255, 255, 0.82);
       padding: 9px;
-      min-height: 66px;
-    }
-
-    .avatar {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: var(--blue-soft);
-      border: 1px solid #bdd2ef;
-      background-size: cover;
-      background-position: center;
-      display: grid;
-      place-items: center;
-      color: #24466f;
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .avatar.placeholder {
-      background-image: none;
+      min-height: 58px;
     }
 
     .user-name {
@@ -471,11 +448,8 @@
           <h2 class="section-title">填写状态</h2>
           <div class="summary-metrics">
             <div class="user-card">
-              <div class="avatar placeholder" id="userAvatar" aria-hidden="true">微</div>
-              <div>
-                <div class="user-name" id="userName">微信用户</div>
-                <div class="user-status" id="summaryIdentity">待识别</div>
-              </div>
+              <div class="user-name" id="userName">微信用户</div>
+              <div class="user-status" id="summaryIdentity">待识别</div>
             </div>
             <div class="metric">
               <div class="metric-label">地区</div>
@@ -504,6 +478,7 @@
     </footer>
   </main>
 
+  <script src="../shared/app.js"></script>
   <script>
     const surveyVersion = "v1.0";
     const genderOptions = ["男", "女"];
@@ -532,7 +507,6 @@
       degreeField: document.getElementById("degreeField"),
       suggestionField: document.getElementById("suggestionField"),
       headerStatus: document.getElementById("headerStatus"),
-      userAvatar: document.getElementById("userAvatar"),
       userName: document.getElementById("userName"),
       summaryIdentity: document.getElementById("summaryIdentity"),
       summaryProvince: document.getElementById("summaryProvince"),
@@ -581,22 +555,14 @@
     }
 
     function readLinkIdentity() {
-      const params = new URLSearchParams(window.location.search);
-      const linkToken = params.get("token") || params.get("surveyToken") || "";
-      const openID = params.get("openID") || params.get("openId") || params.get("openid") || "";
-      const nickName = params.get("nickName") || params.get("nickname") || "微信用户";
-      const avatarUrl = params.get("avatarUrl") || params.get("avatar") || "";
-      const identityLabel = openID || linkToken ? "已通过链接识别" : "待识别";
-      return { linkToken, openID, nickName, avatarUrl, identityLabel };
+      return window.WannaEnglishH5.readIdentity();
     }
 
     function buildPayload() {
       const identity = readLinkIdentity();
       return {
-        linkToken: identity.linkToken,
-        openID: identity.openID,
-        nickName: identity.nickName,
-        avatarUrl: identity.avatarUrl,
+        userID: identity.userID,
+        userName: identity.userName,
         surveyVersion,
         gender: state.gender,
         province: elements.provinceSelect.value,
@@ -606,7 +572,7 @@
     }
 
     function getValidationError(payload) {
-      if (!payload.linkToken && !payload.openID) {
+      if (!Number.isInteger(payload.userID) || payload.userID <= 0) {
         return { field: null, message: "缺少链接身份，请从游戏内入口打开问卷。" };
       }
       if (!payload.province) {
@@ -682,17 +648,11 @@
     function update() {
       const payload = buildPayload();
       const error = getValidationError(payload);
-      elements.userName.textContent = payload.nickName || "微信用户";
-      elements.summaryIdentity.textContent = payload.openID || payload.linkToken ? "已识别" : "待识别";
-      if (payload.avatarUrl) {
-        elements.userAvatar.classList.remove("placeholder");
-        elements.userAvatar.style.backgroundImage = `url("${payload.avatarUrl}")`;
-        elements.userAvatar.textContent = "";
-      } else {
-        elements.userAvatar.classList.add("placeholder");
-        elements.userAvatar.style.backgroundImage = "";
-        elements.userAvatar.textContent = "微";
-      }
+      elements.userName.textContent = payload.userName || "微信用户";
+      const identity = readLinkIdentity();
+      elements.summaryIdentity.textContent = payload.userID > 0
+        ? `${identity.isLocalFallback ? "本地测试用户" : "用户"} ${payload.userID}`
+        : "待识别";
       elements.summaryProvince.textContent = payload.province || "未选择";
       elements.summaryGender.textContent = payload.gender || "未选择";
       elements.summaryDegree.textContent = payload.degree || "未选择";
@@ -705,7 +665,7 @@
       }
     }
 
-    function submitPreview() {
+    async function submitPreview() {
       const payload = buildPayload();
       const error = getValidationError(payload);
       if (error) {
@@ -716,7 +676,26 @@
       }
 
       clearInvalidFields();
-      setStatus("问卷已准备提交", "success");
+      elements.submitButton.disabled = true;
+      setStatus("正在提交问卷...");
+      try {
+        const response = await fetch(`${window.WannaEnglishH5.getApiBaseUrl()}/questionnaire/submit`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.error) {
+          throw new Error(result.error || "提交失败");
+        }
+        setStatus("问卷已提交", "success");
+      } catch (error) {
+        setStatus(`提交失败：${error.message || "请稍后重试"}`, "error");
+      } finally {
+        elements.submitButton.disabled = false;
+      }
     }
 
     function resetForm() {
